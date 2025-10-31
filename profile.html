@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль | Coffee Like</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C4BEF;
+            --primary-light: #F9F5F0;;
+            --secondary: #D2B48C;
+            --secondary-light: #E6D5B8;
+            --dark: #121212;
+            --dark-light: #2D2D2D;
+            --light: #1E1E1E;
+            --light-dark: #2A2A2A;
+            --text-primary: #F0F0F0;
+            --text-secondary: #B0B0B0;
+            --accent: #C4A484;
+            --success: #4CAF50;
+            --error: #F44336;
+            --warning: #FFC107;
+            --info: #2196F3;
+            --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 90px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Хедер */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 40px 20px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="rgba(255,255,255,0.05)" d="M30,30Q50,50,70,30T50,50T30,70T50,50T70,30T50,50Z"/></svg>');
+            opacity: 0.4;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            color: white;
+            font-size: 20px;
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+            z-index: 2;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            transform: translateX(-3px);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .profile-title {
+            font-weight: 600;
+            font-size: 24px;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Основной контент */
+        .profile-container {
+            padding: 25px;
+            margin-top: -20px;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Аватар и основная информация */
+        .profile-card {
+            background: #F9F5F0;
+            border-radius: var(--border-radius-xl);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(105, 95, 87, 0.3);
+            transition: var(--transition);
+            border: 4px solid rgb(215, 215, 215);
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #1b263b;
+        }
+
+        .profile-phone {
+            color: #1b263b;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .profile-level {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(to right, var(--secondary), var(--secondary-light));
+            color: var(--dark);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(210, 180, 140, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-level::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 45%,
+                rgba(255,255,255,0.3) 50%,
+                rgba(255,255,255,0) 55%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+
+        /* Прогресс заполнения профиля */
+        .profile-progress {
+            display: flex;
+            align-items: center;
+            background: #F9F5F0;
+            border-radius: var(--border-radius-xl);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-progress:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin-right: 25px;
+            flex-shrink: 0;
+        }
+
+        .progress-circle-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(to right, #f8e8b9, #f2b8e1);
+
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .progress-circle-fill {
+            position: absolute;
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background: conic-gradient(linear-gradient(to right, #f8e8b9, #f2b8e1) 0% 25%, #1a1a1a 25% 100%);
+transition: var(--transition-slow);
+        }
+
+        .progress-circle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            transition: var(--transition-slow);
+        }
+
+        .progress-info {
+            flex: 1;
+        }
+
+        .progress-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        .progress-text {
+            font-size: 15px;
+            color: #1b263b;
+            margin-bottom: 15px;
+        }
+
+        .progress-btn {
+            background: linear-gradient(to right, #f8e8b9, #f2b8e1);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(111, 78, 55, 0.3);
+            min-width: 180px;
+        }
+
+        .progress-btn:hover {
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(111, 78, 55, 0.4);
+        }
+
+        .progress-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Блок с настройками */
+        .settings-section {
+            background: #F9F5F0;
+            border-radius: var(--border-radius-xl);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .settings-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #1b263b;
+            padding-bottom: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item:hover {
+            transform: translateX(5px);
+        }
+
+        .settings-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(111, 78, 55, 0.1), rgba(210, 180, 140, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            color: #1b263b;
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .settings-item:hover .settings-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(111, 78, 55, 0.2), rgba(210, 180, 140, 0.3));
+        }
+
+        .settings-info {
+            flex: 1;
+        }
+
+        .settings-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color:#1b263b;
+            font-size: 16px;
+        }
+
+        .settings-desc {
+            font-size: 14px;
+            color: #3f4a60;
+        }
+
+        .settings-arrow {
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .settings-item:hover .settings-arrow {
+            color: var(--primary);
+            transform: translateX(3px);
+        }
+
+        /* Бонусный блок */
+        .bonus-card {
+            background:  linear-gradient(to left, #e6d6a7, #dca5cb);;
+            color: white;
+            border-radius: var(--border-radius-xl);
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .bonus-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(111, 78, 55, 0.3);
+        }
+
+        .bonus-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="rgba(255,255,255,0.08)" d="M20,20L50,50L20,80L50,50L80,80L50,50L80,20L50,50Z"/></svg>');
+            opacity: 0.3;
+            transform: rotate(30deg);
+            animation: float 25s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: rotate(30deg) translateX(0) translateY(0); }
+            100% { transform: rotate(30deg) translateX(-100px) translateY(100px); }
+        }
+
+        .bonus-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .bonus-title {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bonus-title i {
+            color: var(--secondary);
+            font-size: 24px;
+        }
+
+        .bonus-text {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .bonus-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+
+        .bonus-btn:hover {
+            background: var(--light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .bonus-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Блок "Мои магазины" */
+        .stores-card {
+            background: var(--light);
+            border-radius: var(--border-radius-xl);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+
+        .stores-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stores-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stores-title {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+
+        .stores-count {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stores-preview {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .store-preview-item {
+            flex: 0 0 auto;
+            width: 80px;
+            text-align: center;
+        }
+
+        .store-preview-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--dark-light);
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 600;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .store-preview-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .store-preview-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .store-preview-points {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        /* Модальное окно "Мои магазины" */
+        .stores-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .stores-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .stores-modal-content {
+            background: var(--light);
+            width: 100%;
+            max-width: 500px;
+            border-radius: var(--border-radius-xl);
+            padding: 30px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            opacity: 0;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stores-modal.show .stores-modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .stores-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .stores-modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+
+        .stores-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-stores-modal {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-stores-modal:hover {
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .stores-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .store-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background: var(--dark-light);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .store-item:hover {
+            background: rgba(111, 78, 55, 0.2);
+            transform: translateX(5px);
+        }
+
+        .store-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--light);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .store-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .store-info {
+            flex: 1;
+        }
+
+        .store-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text-primary);
+        }
+
+        .store-address {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .store-points {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Модальное окно редактирования профиля */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--light);
+            width: 100%;
+            max-width: 500px;
+            border-radius: var(--border-radius-xl);
+            padding: 35px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            opacity: 0;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-modal {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--dark-light);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.3);
+            background: var(--dark);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .gender-select {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .gender-option {
+            flex: 1;
+        }
+
+        .gender-radio {
+            display: none;
+        }
+
+        .gender-label {
+            display: block;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            background: var(--dark-light);
+            color: var(--text-primary);
+        }
+
+        .gender-radio:checked + .gender-label {
+            border-color: var(--primary);
+            background: rgba(111, 78, 55, 0.2);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 17px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(111, 78, 55, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-submit:hover {
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(111, 78, 55, 0.4);
+        }
+
+        .form-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Навигация */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #F9F5F0;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+            z-index: 100;
+            border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            transition: var(--transition);
+            position: relative;
+            padding: 8px 15px;
+            border-radius: 15px;
+        }
+
+        .nav-item i {
+            font-size: 24px;
+            margin-bottom: 5px;
+            transition: rgba(0,0,0,0.08);
+        }
+
+        .nav-item.active {
+            color: #3f37c9;
+            background: rgba(111, 78, 55, 0.2);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-5px);
+            text-shadow: 0 4px 8px rgba(111, 78, 55, 0.3);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 30px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .nav-item.active::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-card, .profile-progress, .bonus-card, .stores-card, .settings-section {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .profile-progress {
+            animation-delay: 0.1s;
+        }
+
+        .bonus-card {
+            animation-delay: 0.2s;
+        }
+
+        .stores-card {
+            animation-delay: 0.3s;
+        }
+
+        .settings-section {
+            animation-delay: 0.4s;
+        }
+
+        /* Toast уведомление */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast i {
+            font-size: 24px;
+        }
+
+        .toast-success {
+            background: var(--success);
+        }
+
+        .toast-error {
+            background: var(--error);
+        }
+
+        .toast-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .toast-info {
+            background: var(--info);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+            
+            .profile-name {
+                font-size: 22px;
+            }
+            
+            .progress-circle {
+                width: 70px;
+                height: 70px;
+                margin-right: 20px;
+            }
+            
+            .settings-item {
+                padding: 15px 0;
+            }
+            
+            .settings-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+                margin-right: 15px;
+            }
+            
+            .modal-content, .stores-modal-content {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <br>
+
+    <!-- Основной контент -->
+    <div class="profile-container">
+        <!-- Карточка профиля -->
+        <div class="profile-card">
+            <div class="profile-avatar">
+                B
+            </div>
+            <h2 class="profile-name">Тихоненко Влад</h2>
+            <p class="profile-phone">+375 (29) 123-45-67</p>
+            <span class="profile-level" style="color: #F9F5F0;">
+                <i class="fas fa-crown" style="margin-right: 8px;"></i>
+                Bronze уровень
+            </span>
+        </div>
+
+        <!-- Прогресс заполнения профиля -->
+        <div class="profile-progress">
+            <div class="progress-circle">
+                <div class="progress-circle-bg" >
+                    <div class="progress-circle-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-circle-text" id="progressText">25%</div>
+            </div>
+            <div class="progress-info">
+                <h3 class="progress-title">Заполните профиль</h3>
+                <p class="progress-text">Получите 10 бонусных баллов за полную информацию о себе</p>
+                <button class="progress-btn" onclick="openEditModal()">
+                    <i class="fas fa-pen"></i>
+                    Заполнить профиль
+                </button>
+            </div>
+        </div>
+
+        <!-- Бонусный блок -->
+        <div class="bonus-card">
+            <div class="bonus-content">
+                <h3 class="bonus-title" style="color: #F9F5F0;">
+                    <i class="fas fa-gift" style="color:#F9F5F0 ;"></i>
+                    День рождения
+                </h3>
+                <p class="bonus-text">Укажите дату рождения и получите специальный подарок и двойные бонусы в ваш день рождения!</p>
+                <button class="bonus-btn" onclick="openEditModal()">
+                    <i class="fas fa-calendar-alt"></i>
+                    Указать дату
+                </button>
+            </div>
+        </div>
+
+        
+
+        <!-- Настройки -->
+        <div class="settings-section">
+            <h3 class="section-title">Настройки и аккаунт</h3>
+            
+            <div class="settings-item" onclick="showToast('Настройки уведомлений открыты', 'info')">
+                <div class="settings-icon">
+                    <i class="fas fa-bell" style="color: #1b263b;"></i>
+                </div>
+                <div class="settings-info">
+                    <div class="settings-name">Уведомления</div>
+                    <div class="settings-desc">Настройте получение уведомлений</div>
+                </div>
+                <div class="settings-arrow">
+                    <i class="fas fa-chevron-right" ></i>
+                </div>
+            </div>
+            
+            <div class="settings-item" onclick="showToast('Настройки безопасности открыты', 'info')">
+                <div class="settings-icon">
+                    <i class="fas fa-lock" style="color: #1b263b;"></i>
+                </div>
+                <div class="settings-info">
+                    <div class="settings-name">Безопасность</div>
+                    <div class="settings-desc">Измените пароль и настройки входа</div>
+                </div>
+                <div class="settings-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="settings-item" onclick="toggleDarkMode()">
+                <div class="settings-icon">
+                    <i class="fas fa-moon" style="color: #1b263b;"></i>
+                </div>
+                <div class="settings-info">
+                    <div class="settings-name">Темная тема</div>
+                    <div class="settings-desc">Включить ночной режим</div>
+                </div>
+                <div class="settings-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="settings-item" onclick="showToast('Вы успешно вышли из аккаунта', 'success')">
+                <div class="settings-icon" style="color: var(--error);">
+                    <i class="fas fa-sign-out-alt" style="color: #6b3a3a;"></i>
+                </div>
+                <div class="settings-info">
+                    <div class="settings-name" style="color: var(--error);">Выйти</div>
+                    <div class="settings-desc">Завершить текущий сеанс</div>
+                </div>
+                <div class="settings-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно "Мои магазины" -->
+    <div id="storesModal" class="stores-modal">
+        <div class="stores-modal-content">
+            <div class="stores-modal-header">
+                <div class="stores-modal-title">Мои магазины</div>
+                <button class="close-stores-modal" onclick="closeStoresModal()">&times;</button>
+            </div>
+            
+            <div class="stores-list">
+                <div class="store-item" onclick="showToast('Открыт магазин Coffee Like', 'info')">
+                    <div class="store-avatar">C</div>
+                    <div class="store-info">
+                        <div class="store-name">Coffee Like</div>
+                        <div class="store-address">ул. Пушкина, 15</div>
+                    </div>
+                    <div class="store-points">1,240</div>
+                </div>
+                
+                <div class="store-item" onclick="showToast('Открыт магазин Starbucks', 'info')">
+                    <div class="store-avatar">S</div>
+                    <div class="store-info">
+                        <div class="store-name">Starbucks</div>
+                        <div class="store-address">ТЦ "Галерея", 2 этаж</div>
+                    </div>
+                    <div class="store-points">850</div>
+                </div>
+                
+                <div class="store-item" onclick="showToast('Открыт магазин Кофе Хауз', 'info')">
+                    <div class="store-avatar">K</div>
+                    <div class="store-info">
+                        <div class="store-name">Кофе Хауз</div>
+                        <div class="store-address">ул. Ленина, 42</div>
+                    </div>
+                    <div class="store-points">620</div>
+                </div>
+                
+                <div class="store-item" onclick="showToast('Открыт магазин Маккофе', 'info')">
+                    <div class="store-avatar">M</div>
+                    <div class="store-info">
+                        <div class="store-name">Маккофе</div>
+                        <div class="store-address">пр. Мира, 10</div>
+                    </div>
+                    <div class="store-points">420</div>
+                </div>
+                
+                <div class="store-item" onclick="showToast('Открыт магазин Шоколадница', 'info')">
+                    <div class="store-avatar">Ш</div>
+                    <div class="store-info">
+                        <div class="store-name">Шоколадница</div>
+                        <div class="store-address">ТРЦ "Океан", 3 этаж</div>
+                    </div>
+                    <div class="store-points">180</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования профиля -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Редактирование профиля</div>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="fullName" class="form-label">ФИО</label>
+                    <input type="text" id="fullName" class="form-input" placeholder="Введите ваше полное имя" value="Иван Иванов">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">Номер телефона</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="+7 (___) ___-__-__" value="+7 (900) 123-45-67">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate" class="form-label">Дата рождения</label>
+                    <input type="date" id="birthDate" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Пол</label>
+                    <div class="gender-select">
+                        <div class="gender-option">
+                            <input type="radio" id="male" name="gender" class="gender-radio" value="male" checked>
+                            <label for="male" class="gender-label">Мужской</label>
+                        </div>
+                        <div class="gender-option">
+                            <input type="radio" id="female" name="gender" class="gender-radio" value="female">
+                            <label for="female" class="gender-label">Женский</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="form-submit" onclick="saveProfile()">
+                    <i class="fas fa-save"></i>
+                    Сохранить изменения
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast уведомление -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Успешно сохранено!</span>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            Главная
+        </a>
+        <!-- <a href="#" class="nav-item">
+            <i class="fas fa-map-marker-alt"></i>
+            На карте
+        </a> -->
+        <a href="qr1.html" class="nav-item" onclick="window.location.href='index.html'">
+            <i class="fas fa-qrcode"></i>
+            QR-код
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            Профиль
+        </a>
+    </nav>
+
+    <script>
+        // Элементы DOM
+        const editModal = document.getElementById('editModal');
+        const storesModal = document.getElementById('storesModal');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        let filledFields = 1; // Текущее количество заполненных полей
+        const totalFields = 4; // Всего полей для заполнения
+        let darkMode = false;
+
+        // Обновление прогресса
+        function updateProgress() {
+            const percent = Math.round((filledFields / totalFields) * 100);
+            progressFill.style.background = `conic-gradient(var(--primary) 0% ${percent}%, var(--light) ${percent}% 100%)`;
+            progressText.textContent = `${percent}%`;
+            
+            // Если все заполнено, меняем текст
+            if (percent === 100) {
+                document.querySelector('.progress-title').textContent = 'Профиль заполнен!';
+                document.querySelector('.progress-text').textContent = 'Вы получили 10 бонусных баллов!';
+                document.querySelector('.progress-btn').innerHTML = '<i class="fas fa-check"></i> Профиль заполнен';
+                document.querySelector('.progress-btn').style.background = 'var(--success)';
+            }
+        }
+
+        // Открыть модальное окно редактирования профиля
+        function openEditModal() {
+            editModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрыть модальное окно редактирования профиля
+        function closeModal() {
+            editModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Открыть модальное окно "Мои магазины"
+        function openStoresModal() {
+            storesModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрыть модальное окно "Мои магазины"
+        function closeStoresModal() {
+            storesModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Сохранить профиль
+        function saveProfile() {
+            // Здесь должна быть логика сохранения
+            // Для демонстрации просто увеличим счетчик заполненных полей
+            if (filledFields < totalFields) {
+                filledFields = totalFields;
+                updateProgress();
+            }
+            
+            closeModal();
+            showToast('Профиль успешно сохранен! Получено 10 бонусных баллов', 'success');
+        }
+
+        // Показать toast уведомление
+        function showToast(message, type) {
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            
+            // Устанавливаем тип toast
+            switch(type) {
+                case 'success':
+                    toast.classList.add('toast-success');
+                    toast.querySelector('i').className = 'fas fa-check-circle';
+                    break;
+                case 'error':
+                    toast.classList.add('toast-error');
+                    toast.querySelector('i').className = 'fas fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    toast.classList.add('toast-warning');
+                    toast.querySelector('i').className = 'fas fa-exclamation-triangle';
+                    break;
+                case 'info':
+                    toast.classList.add('toast-info');
+                    toast.querySelector('i').className = 'fas fa-info-circle';
+                    break;
+                default:
+                    toast.querySelector('i').className = 'fas fa-info-circle';
+            }
+            
+            toast.classList.add('show');
+            
+            // Скрываем toast через 3 секунды
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Переключение темной темы
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.documentElement.style.setProperty('--light', '#2D3436');
+                document.documentElement.style.setProperty('--light-dark', '#3E4A4E');
+                document.documentElement.style.setProperty('--dark', '#F9F5F0');
+                document.documentElement.style.setProperty('--dark-light', '#D8D3CC');
+                showToast('Темная тема включена', 'info');
+            } else {
+                document.documentElement.style.setProperty('--light', '#F9F5F0');
+                document.documentElement.style.setProperty('--light-dark', '#E8E2D9');
+                document.documentElement.style.setProperty('--dark', '#2D3436');
+                document.documentElement.style.setProperty('--dark-light', '#5D6A6E');
+                showToast('Темная тема выключена', 'info');
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            
+            // Обработка навигации
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (!this.classList.contains('active')) {
+                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // Анимация появления элементов
+            const animatedElements = document.querySelectorAll('.profile-card, .profile-progress, .bonus-card, .stores-card, .settings-section');
+            animatedElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Закрытие модальных окон при клике вне их
+        window.onclick = function(event) {
+            if (event.target === editModal) {
+                closeModal();
+            }
+            if (event.target === storesModal) {
+                closeStoresModal();
+            }
+        }
+    </script>
+</body>
+</html>

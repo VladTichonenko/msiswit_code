@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #e0e7ff, #c3dafe);
+        }
+
+        #cameraModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .qr-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 4px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .instruction-text {
+            position: absolute;
+            bottom: 120px;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 400;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1001;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+        }
+
+        #scanSuccess {
+            display: none;
+            position: absolute;
+            top: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 1001;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        #payBtn, #cancelBtn {
+            position: absolute;
+            bottom: 30px;
+            padding: 14px 60px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(75, 85, 99, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+            z-index: 1001;
+        }
+
+        #payBtn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #payBtn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #cancelBtn {
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+        }
+
+        #payBtn:hover, #cancelBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 85, 99, 0.6);
+        }
+
+        #payBtn:active, #cancelBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(75, 85, 99, 0.3);
+        }
+
+        #paymentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .card-container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideIn 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card-container h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .card-placeholder {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .card-placeholder:hover {
+            border-color: #6366f1;
+            background-color: #f8fafc;
+        }
+
+        .card-placeholder i {
+            font-size: 40px;
+            color: #6366f1;
+            margin-bottom: 12px;
+        }
+
+        .card-placeholder span {
+            font-size: 16px;
+            color: #4b5563;
+            font-weight: 400;
+        }
+
+        #closePaymentBtn {
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(75, 85, 99, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #closePaymentBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 85, 99, 0.6);
+        }
+
+        #closePaymentBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(75, 85, 99, 0.3);
+        }
+
+        #errorMessage {
+            display: none;
+            position: absolute;
+            top: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 1001;
+            animation: fadeOut 3s forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="cameraModal">
+        <video id="cameraFeed" autoplay playsinline></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <div class="qr-frame"></div>
+        <div class="instruction-text">Наведите камеру на QR-код для сканирования</div>
+        <div id="scanSuccess">QR-код успешно отсканирован!</div>
+        <div id="errorMessage"></div>
+        <button id="payBtn">Оплатить</button>
+        <button id="cancelBtn">Отменить</button>
+    </div>
+
+    <div id="paymentModal">
+        <div class="card-container">
+            <h2>Подключите карту</h2>
+            <div class="card-placeholder" onclick="window.open('https://www.halva.by/?gad_source=1&gbraid=0AAAAA9UDqYAzFX2oseCDYNS2r_68g4ZB-&gclid=CjwKCAjwn6LABhBSEiwAsNJrjqlJibLG8nAFQnNMyT0-hJ46Z4aIAitpm5Hn0Y6WUKRt7Q-co5EfvRoCB2cQAvD_BwE#form_section?utm_source=google_halva_obshchaya&utm_medium=cpc&utm_campaign=gpm-halva&utm_content=&utm_term=')">
+                <i class="fas fa-plus"></i>
+                <span>Добавить новую карту</span>
+            </div>
+            <button id="closePaymentBtn">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        const cameraModal = document.getElementById('cameraModal');
+        const paymentModal = document.getElementById('paymentModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const payBtn = document.getElementById('payBtn');
+        const closePaymentBtn = document.getElementById('closePaymentBtn');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const canvas = document.getElementById('canvas');
+        const scanSuccess = document.getElementById('scanSuccess');
+        const errorMessage = document.getElementById('errorMessage');
+        const ctx = canvas.getContext('2d');
+        let stream = null;
+        let scanning = false;
+
+        // Check if jsQR is loaded with a fallback
+        function checkJsQRLoaded() {
+            if (!window.jsQR) {
+                showError('Библиотека jsQR не загружена. Проверьте подключение к интернету.');
+                return false;
+            }
+            return true;
+        }
+
+        // Automatically open camera on page load
+        window.onload = async () => {
+            if (!checkJsQRLoaded()) return;
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                cameraFeed.srcObject = stream;
+                cameraModal.style.display = 'flex';
+                scanning = true;
+                payBtn.classList.remove('visible');
+                cancelBtn.style.display = 'block';
+                errorMessage.style.display = 'none';
+
+                cameraFeed.onloadedmetadata = () => {
+                    cameraFeed.play().then(() => {
+                        canvas.width = cameraFeed.videoWidth;
+                        canvas.height = cameraFeed.videoHeight;
+                        startQRScanning();
+                    }).catch(err => {
+                        showError('Не удалось запустить видеопоток: ' + err.message);
+                    });
+                };
+            } catch (err) {
+                showError('Не удалось открыть камеру. Разрешите доступ к камере.');
+                console.error('Ошибка доступа к камере:', err);
+            }
+        };
+
+        cancelBtn.addEventListener('click', () => {
+            stopCamera();
+            cameraModal.style.display = 'none';
+        });
+
+        payBtn.addEventListener('click', () => {
+            stopCamera();
+            cameraModal.style.display = 'none';
+            paymentModal.style.display = 'flex';
+        });
+
+        closePaymentBtn.addEventListener('click', () => {
+            paymentModal.style.display = 'none';
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function stopCamera() {
+            scanning = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraFeed.srcObject = null;
+        }
+
+        function startQRScanning() {
+            if (!scanning || !stream) return;
+
+            function scanQR() {
+                if (!scanning || !stream || cameraFeed.readyState !== cameraFeed.HAVE_ENOUGH_DATA) {
+                    if (scanning && stream) {
+                        requestAnimationFrame(scanQR);
+                    }
+                    return;
+                }
+
+                try {
+                    ctx.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert'
+                    });
+
+                    if (code) {
+                        console.log('QR Code detected:', code.data);
+                        scanning = false;
+                        scanSuccess.style.display = 'block';
+                        payBtn.classList.add('visible');
+                        cancelBtn.style.display = 'none';
+                        setTimeout(() => {
+                            scanSuccess.style.display = 'none';
+                        }, 2000);
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Ошибка при сканировании QR-кода:', err);
+                    showError('Ошибка при сканировании QR-кода.');
+                }
+
+                requestAnimationFrame(scanQR);
+            }
+
+            requestAnimationFrame(scanQR);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            stopCamera();
+        });
+    </script>
+</body>
+</html>

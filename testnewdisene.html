@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXURY LOYALTY</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0F1C3F;
+            --secondary: #2A4B8C;
+            --accent: #E8C05A;
+            --light: #F8F5F0;
+            --dark: #0A1229;
+            --success: #3AA8A1;
+            --error: #D94E4E;
+        }
+
+        @font-face {
+            font-family: 'Neue Haas Grotesk';
+            src: url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Neue Haas Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Прелоадер */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+
+        .loader-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 1px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-progress::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: var(--accent);
+            animation: progress 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+
+        @keyframes progress {
+            100% { width: 100%; }
+        }
+
+        /* Основной контейнер */
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            background: var(--light);
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+        }
+
+        /* Шапка */
+        .app-header {
+            padding: 1.5rem 1.5rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+            border: 2px solid var(--accent);
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .user-status {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .notifications {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background: var(--error);
+            border-radius: 50%;
+            color: white;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--light);
+        }
+
+        /* Баллы */
+        .points-card {
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(15, 28, 63, 0.2);
+        }
+
+        .points-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .points-card::before {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .points-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .points-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .points-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .points-progress-bar {
+            height: 100%;
+            width: 65%;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .points-next-level {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Навигация */
+        .app-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--dark);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+
+        .nav-item.active .nav-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Карта */
+        .map-container {
+            margin: 1.5rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            height: 240px;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* История */
+        .history-section {
+            margin: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-link {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .transaction-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(42, 75, 140, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--secondary);
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .transaction-date {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Аналитика */
+        .analytics-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .analytics-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px 30px 0 0;
+            padding: 1.5rem;
+            flex: 1;
+            margin-top: auto;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin: 1rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 1rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Прелоадер -->
+    <div id="preloader">
+        <div class="loader-logo">LUXURY</div>
+        <div class="loader-progress"></div>
+    </div>
+
+    <!-- Основное приложение -->
+    <div class="app-container">
+        <!-- Шапка -->
+        <header class="app-header fade-in">
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <div class="user-name">John Doe</div>
+                        <div class="user-status">Platinum Member</div>
+                    </div>
+                </div>
+                <div class="notifications">
+                    <i class="fas fa-bell" style="font-size: 1.2rem;"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Баллы -->
+        <section class="points-card fade-in delay-1">
+            <div class="points-label">ВАШИ БАЛЛЫ</div>
+            <div class="points-amount">24,850</div>
+            <div class="points-progress">
+                <div class="points-progress-bar"></div>
+            </div>
+            <div class="points-next-level">65% до следующего уровня</div>
+        </section>
+
+        <!-- Карта -->
+        <section class="fade-in delay-2">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </section>
+
+        <!-- История -->
+        <section class="history-section fade-in delay-3">
+            <div class="section-title">
+                <span>Последние операции</span>
+                <a href="#" class="section-link">Все операции</a>
+            </div>
+            <div class="transaction-list">
+                <div class="transaction-item">
+                    <div class="transaction-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">Flagship Store</div>
+                        <div class="transaction-date">15 июля • 18:30</div>
+                    </div>
+                    <div class="transaction-amount">+1,500</div>
+                </div>
+                <div class="transaction-item">
+                    <div class="transaction-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">Бонус за активность</div>
+                        <div class="transaction-date">12 июля • 10:15</div>
+                    </div>
+                    <div class="transaction-amount">+300</div>
+                </div>
+                <div class="transaction-item">
+                    <div class="transaction-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">Ресторан "Lavanda"</div>
+                        <div class="transaction-date">10 июля • 21:45</div>
+                    </div>
+                    <div class="transaction-amount">+750</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Навигация -->
+        <nav class="app-navigation fade-in delay-4">
+            <a href="#" class="nav-item active">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-label">Главная</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-label">Аналитика</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="nav-label">Награды</div>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-label">Профиль</div>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Модальное окно аналитики -->
+    <div class="analytics-modal" id="analyticsModal">
+        <div class="modal-header">
+            <h2>Ваша аналитика</h2>
+            <button class="modal-close" onclick="closeAnalytics()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-content">
+            <div class="chart-container">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">24,850</div>
+                    <div class="stat-label">Всего баллов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,240</div>
+                    <div class="stat-label">Средний чек</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18:30</div>
+                    <div class="stat-label">Пиковое время</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Визитов в месяц</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Инициализация карты
+        function initMap() {
+            const map = L.map('map').setView([55.751244, 37.618423], 15);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const icon = L.divIcon({
+                className: 'map-marker',
+                html: `<div style="width: 24px; height: 24px; background: var(--accent); border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.2);"></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            L.marker([55.751244, 37.618423], { icon }).addTo(map)
+                .bindPopup('<b>Flagship Store</b><br>Часы работы: 10:00 - 22:00');
+        }
+
+        // Инициализация графика
+        function initChart() {
+            const ctx = document.getElementById('analyticsChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл'],
+                    datasets: [{
+                        label: 'Начисление баллов',
+                        data: [1200, 1900, 3000, 2500, 2800, 4000, 3500],
+                        borderColor: '#0F1C3F',
+                        backgroundColor: 'rgba(15, 28, 63, 0.05)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#E8C05A',
+                        pointBorderColor: '#0F1C3F',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Управление модальным окном
+        function openAnalytics() {
+            document.getElementById('analyticsModal').classList.add('active');
+        }
+
+        function closeAnalytics() {
+            document.getElementById('analyticsModal').classList.remove('active');
+        }
+
+        // Прелоадер
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('preloader').style.display = 'none';
+                    initMap();
+                    initChart();
+                }, 1000);
+            }, 2000);
+        });
+
+        // Навигация
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
