@@ -1,0 +1,9 @@
+Flask==2.3.3
+Flask-SocketIO==5.3.6
+aiogram==3.1.1
+requests==2.31.0
+Pillow==10.0.1
+Flask-Compress==1.15
+redis>=5.0.0
+python-socketio>=5.10.0
+gevent>=23.0.0
